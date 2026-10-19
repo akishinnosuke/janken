@@ -3,18 +3,39 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Janken GAME!</title>
+  <title>Janken GAME</title>
 </head>
 
 <body>
+  <!-- ログアウト用リンク -->
+  <a href="/logout">ログアウト</a>
+
   <h1>Janken GAME!</h1>
-  <div th:if="${userName}">
-    Hi [[${userName}]]
-  </div>
+
+  <!-- エントリー情報の一覧表示 -->
+  <h2>エントリー</h2>
+  <ul>
+    <li th:each="user : ${entry.users}" th:text="${user}"></li>
+  </ul>
+
+  <!-- 余力課題：エントリー人数の表示 -->
+  <p th:if="${entry.users != null}" th:text="'今' + ${#lists.size(entry.users)} + '人がエントリーしています'"></p>
+
+  <!-- ログインユーザーの表示 -->
+  <p th:text="'Hi ' + ${loginUser}"></p>
+
+  <!-- じゃんけん選択リンク -->
   <div>
-    <a href="/jankengame?hand=Gu">ぐー</a>
-    <a href="/jankengame?hand=Choki">ちょき</a>
-    <a href="/jankengame?hand=Pa">ぱー</a>
+    <a href="/janken?hand=Gu">ぐー</a>
+    <a href="/janken?hand=Choki">ちょき</a>
+    <a href="/janken?hand=Pa">ぱー</a>
+  </div>
+
+  <!-- じゃんけん結果表示（手が選ばれている場合） -->
+  <div th:if="${myHand}">
+    <p th:text="'あなたの手: ' + ${myHand}"></p>
+    <p th:text="'相手の手: ' + ${cpuHand}"></p>
+    <p th:text="'結果: ' + ${result}"></p>
   </div>
 </body>
 

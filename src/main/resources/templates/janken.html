@@ -12,19 +12,6 @@
 
   <h1>Janken GAME!</h1>
 
-  <!-- エントリー情報の一覧表示 -->
-  <h2>エントリー</h2>
-  <ul>
-    <li th:each="user : ${entry.users}" th:text="${user}"></li>
-  </ul>
-
-  <!-- 余力課題：エントリー人数の表示 -->
-  <p th:if="${entry.users != null}" th:text="'今' + ${#lists.size(entry.users)} + '人がエントリーしています'"></p>
-
-  <!-- ログインユーザーの表示 -->
-  <p th:text="'Hi ' + ${loginUser}"></p>
-
-  <!-- じゃんけん選択リンク -->
   <div>
     <a href="/janken?hand=Gu">ぐー</a>
     <a href="/janken?hand=Choki">ちょき</a>
@@ -36,6 +23,12 @@
     <p th:text="'あなたの手: ' + ${myHand}"></p>
     <p th:text="'相手の手: ' + ${cpuHand}"></p>
     <p th:text="'結果: ' + ${result}"></p>
+  </div>
+
+  <div th:if="${janken}">
+    <div>あなたの手 [[${janken.myHand}]]</div>
+    <div>相手の手 [[${janken.cpuHand}]]</div>
+    <div>結果 [[${janken.result}]]</div>
   </div>
 </body>
 

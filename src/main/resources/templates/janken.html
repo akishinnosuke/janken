@@ -2,12 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <title>Janken GAME!</title>
 </head>
 
 <body>
   <h1>Janken GAME!</h1>
+<<<<<<< HEAD
+  <p>Hi <span sec:authentication="name"></span></p>
+  <a href="/logout">ログアウト</a>
+=======
 
   <div th:if="${userName}">
     Hi [[${userName}]]
@@ -24,6 +28,7 @@
     <div>相手の手 [[${janken.cpuHand}]]</div>
     <div>結果 [[${janken.result}]]</div>
   </div>
+>>>>>>> main
 </body>
 
 </html>

@@ -1,11 +1,13 @@
 package oit.is.z3417.kaizi.janken.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import oit.is.z3417.kaizi.janken.model.UserMapper;
 import oit.is.z3417.kaizi.janken.model.Match;
@@ -33,4 +35,12 @@ public class JankenController {
 
     return "janken";
   }
+
+  @GetMapping("/match")
+  public String match(@RequestParam int id, ModelMap model, Principal prin) {
+    User cpu = userMapper.selectById(id);
+    model.addAttribute("cpu", cpu);
+    model.addAttribute("loginUser", prin.getName());
+    return "match";
+}
 }

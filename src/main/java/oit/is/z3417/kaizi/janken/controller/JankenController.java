@@ -29,6 +29,4 @@ public class JankenController {
 
     return "janken";
   }
-
-  // 以前のじゃんけん処理のGETやPOSTメソッドがこの後に続きます...
 }

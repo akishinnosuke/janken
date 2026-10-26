@@ -42,5 +42,29 @@ public class JankenController {
     model.addAttribute("cpu", cpu);
     model.addAttribute("loginUser", prin.getName());
     return "match";
-}
+  }
+
+  @GetMapping("/fight")
+  public String fight(@RequestParam int id, @RequestParam String hand, ModelMap model, Principal prin) {
+    User opponent = userMapper.selectById(id);
+    User me = userMapper.selectByName(prin.getName());
+
+    String cpuHand = "Gu"; // CPUの手（固定でよいとのこと）[cite: 22]
+
+    Match match = new Match();
+    match.setUser1(me.getId());
+    match.setUser2(opponent.getId());
+    match.setUser1Hand(hand);
+    match.setUser2Hand(cpuHand);
+
+    matchMapper.insertMatch(match);
+
+    model.addAttribute("cpu", opponent);
+    model.addAttribute("loginUser", prin.getName());
+    model.addAttribute("myHand", hand);
+    model.addAttribute("cpuHand", cpuHand);
+
+    // 勝敗判定などを必要に応じて追加
+    return "match";
+  }
 }

@@ -2,20 +2,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <title>Janken GAME!</title>
 </head>
 
 <body>
   <h1>Janken GAME!</h1>
-  <div th:if="${userName}">
-    Hi [[${userName}]]
-  </div>
-  <div>
-    <a href="/jankengame?hand=Gu">ぐー</a>
-    <a href="/jankengame?hand=Choki">ちょき</a>
-    <a href="/jankengame?hand=Pa">ぱー</a>
-  </div>
+  <p>Hi <span sec:authentication="name"></span></p>
+  <a href="/logout">ログアウト</a>
 </body>
 
 </html>

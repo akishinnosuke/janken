@@ -4,14 +4,28 @@
 <head>
   <meta charset="utf-8">
   <title>Janken GAME!</title>
+  <script>
+    window.onload = function () {
+      var sse = new EventSource('/sse');
+      sse.addEventListener("result", function (event) {
+        var match = JSON.parse(event.data);
+        var resultDiv = document.getElementById("result_div");
+        resultDiv.innerHTML = "<h2>結果</h2>" +
+          "<p>Match: id:" + match.id + " user1:" + match.user1 + " user2:" + match.user2 + 
+          " user1Hand:" + match.user1Hand + " user2Hand:" + match.user2Hand + "</p>" +
+          "<a href='/janken'>もどる</a>";
+      });
+    }
+  </script>
 </head>
 
 <body>
   <h1>Janken GAME!</h1>
   <p>Hi [[${loginUser}]]</p>
-  <p>相手の手を待ってます</p>
-  <br>
-  <a href="/janken">もどる</a>
+  
+  <div id="result_div">
+    <p>相手の手を待ってます</p>
+  </div>
 </body>
 
 </html>

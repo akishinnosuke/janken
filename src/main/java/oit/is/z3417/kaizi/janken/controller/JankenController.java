@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import oit.is.z3417.kaizi.janken.model.UserMapper;
 import oit.is.z3417.kaizi.janken.model.Match;
@@ -15,6 +16,7 @@ import oit.is.z3417.kaizi.janken.model.MatchMapper;
 import oit.is.z3417.kaizi.janken.model.MatchInfo;
 import oit.is.z3417.kaizi.janken.model.MatchInfoMapper;
 import oit.is.z3417.kaizi.janken.model.User;
+import oit.is.z3417.kaizi.janken.service.AsyncKekka;
 
 @Controller
 public class JankenController {
@@ -27,6 +29,9 @@ public class JankenController {
   
   @Autowired
   private MatchInfoMapper matchInfoMapper;
+
+  @Autowired
+  private AsyncKekka asyncKekka;
 
   @GetMapping("/janken")
   public String janken(ModelMap model, Principal prin) {
@@ -55,11 +60,9 @@ public class JankenController {
     User opponent = userMapper.selectById(id);
     User me = userMapper.selectByName(prin.getName());
 
-    // Task3: 自分(後手)が選ばれているアクティブな待機レコードがあるか確認する
     MatchInfo activeMatch = matchInfoMapper.selectActiveMatchByUser2(me.getId());
 
     if (activeMatch == null) {
-      // 存在しない場合(自分が先手の場合): 待機状態として matchinfo に登録
       MatchInfo info = new MatchInfo();
       info.setUser1(me.getId());
       info.setUser2(opponent.getId());
@@ -67,21 +70,26 @@ public class JankenController {
       info.setIsActive(true);
       matchInfoMapper.insertMatchInfo(info);
     } else {
-      // 存在する場合(相手が待機中の場合): 試合成立として matches に登録
       Match match = new Match();
       match.setUser1(activeMatch.getUser1());
       match.setUser2(me.getId());
       match.setUser1Hand(activeMatch.getUser1Hand());
       match.setUser2Hand(hand);
-      match.setIsActive(true); // Task3: isActiveをTRUEとして挿入
+      match.setIsActive(true);
       matchMapper.insertMatch(match);
 
-      // 試合成立に伴い、matchinfo の待機レコードを isActive = FALSE に更新
       activeMatch.setIsActive(false);
       matchInfoMapper.updateIsActive(activeMatch);
     }
 
     model.addAttribute("loginUser", prin.getName());
     return "wait";
+  }
+
+  @GetMapping("/sse")
+  public SseEmitter sse() {
+    SseEmitter emitter = new SseEmitter();
+    asyncKekka.syncKekka(emitter);
+    return emitter;
   }
 }

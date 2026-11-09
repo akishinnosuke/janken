@@ -36,7 +36,6 @@ public class JankenController {
     ArrayList<Match> matches = matchMapper.selectAllMatches();
     model.addAttribute("matches", matches);
 
-    // Task2: アクティブな試合を取得して表示する
     ArrayList<MatchInfo> activeMatches = matchInfoMapper.selectActiveMatches();
     model.addAttribute("activeMatches", activeMatches);
 
@@ -56,13 +55,31 @@ public class JankenController {
     User opponent = userMapper.selectById(id);
     User me = userMapper.selectByName(prin.getName());
 
-    MatchInfo info = new MatchInfo();
-    info.setUser1(me.getId());
-    info.setUser2(opponent.getId());
-    info.setUser1Hand(hand);
-    info.setIsActive(true);
+    // Task3: 自分(後手)が選ばれているアクティブな待機レコードがあるか確認する
+    MatchInfo activeMatch = matchInfoMapper.selectActiveMatchByUser2(me.getId());
 
-    matchInfoMapper.insertMatchInfo(info);
+    if (activeMatch == null) {
+      // 存在しない場合(自分が先手の場合): 待機状態として matchinfo に登録
+      MatchInfo info = new MatchInfo();
+      info.setUser1(me.getId());
+      info.setUser2(opponent.getId());
+      info.setUser1Hand(hand);
+      info.setIsActive(true);
+      matchInfoMapper.insertMatchInfo(info);
+    } else {
+      // 存在する場合(相手が待機中の場合): 試合成立として matches に登録
+      Match match = new Match();
+      match.setUser1(activeMatch.getUser1());
+      match.setUser2(me.getId());
+      match.setUser1Hand(activeMatch.getUser1Hand());
+      match.setUser2Hand(hand);
+      match.setIsActive(true); // Task3: isActiveをTRUEとして挿入
+      matchMapper.insertMatch(match);
+
+      // 試合成立に伴い、matchinfo の待機レコードを isActive = FALSE に更新
+      activeMatch.setIsActive(false);
+      matchInfoMapper.updateIsActive(activeMatch);
+    }
 
     model.addAttribute("loginUser", prin.getName());
     return "wait";

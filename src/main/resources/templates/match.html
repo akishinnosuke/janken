@@ -1,18 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>Match</title>
+</head>
 <body>
   <h1>Match</h1>
   <h2>[[${loginUser}]] V.S. [[${cpu.name}]]</h2>
 
   <div th:if="${myHand == null}">
-    <a th:href="@{/fight(id=${cpu.id}, hand='Gu')}">ぐー</a>
-    <a th:href="@{/fight(id=${cpu.id}, hand='Choki')}">ちょき</a>
-    <a th:href="@{/fight(id=${cpu.id}, hand='Pa')}">ぱー</a>
-  </div>
-
-  <div th:if="${myHand != null}">
-    <p>あなたの手 [[${myHand}]]</p>
-    <p>相手の手 [[${cpuHand}]]</p>
+    <a th:href="@{/wait(id=${cpu.id}, hand='Gu')}">ぐー</a>
+    <a th:href="@{/wait(id=${cpu.id}, hand='Choki')}">ちょき</a>
+    <a th:href="@{/wait(id=${cpu.id}, hand='Pa')}">ぱー</a>
   </div>
 
   <br>
   <a href="/janken">もどる</a>
 </body>
+</html>

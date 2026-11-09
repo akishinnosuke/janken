@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import oit.is.z3417.kaizi.janken.model.UserMapper;
 import oit.is.z3417.kaizi.janken.model.Match;
 import oit.is.z3417.kaizi.janken.model.MatchMapper;
+import oit.is.z3417.kaizi.janken.model.MatchInfo;
+import oit.is.z3417.kaizi.janken.model.MatchInfoMapper;
 import oit.is.z3417.kaizi.janken.model.User;
 
 @Controller
@@ -21,17 +23,22 @@ public class JankenController {
   private UserMapper userMapper;
 
   @Autowired
-  private MatchMapper matchMapper; // ← これをここに追加
+  private MatchMapper matchMapper;
+  
+  @Autowired
+  private MatchInfoMapper matchInfoMapper;
 
   @GetMapping("/janken")
-  public String janken(ModelMap model) { // ← Model を ModelMap に変更
-    // ユーザ情報の取得（既存の処理）
+  public String janken(ModelMap model, Principal prin) {
     ArrayList<User> users = userMapper.selectAllUsers();
     model.addAttribute("users", users);
 
-    // 試合結果の取得（追加する処理）
     ArrayList<Match> matches = matchMapper.selectAllMatches();
     model.addAttribute("matches", matches);
+
+    // Task2: アクティブな試合を取得して表示する
+    ArrayList<MatchInfo> activeMatches = matchInfoMapper.selectActiveMatches();
+    model.addAttribute("activeMatches", activeMatches);
 
     return "janken";
   }
@@ -44,27 +51,20 @@ public class JankenController {
     return "match";
   }
 
-  @GetMapping("/fight")
-  public String fight(@RequestParam int id, @RequestParam String hand, ModelMap model, Principal prin) {
+  @GetMapping("/wait")
+  public String wait(@RequestParam int id, @RequestParam String hand, ModelMap model, Principal prin) {
     User opponent = userMapper.selectById(id);
     User me = userMapper.selectByName(prin.getName());
 
-    String cpuHand = "Gu"; // CPUの手（固定でよいとのこと）[cite: 22]
+    MatchInfo info = new MatchInfo();
+    info.setUser1(me.getId());
+    info.setUser2(opponent.getId());
+    info.setUser1Hand(hand);
+    info.setIsActive(true);
 
-    Match match = new Match();
-    match.setUser1(me.getId());
-    match.setUser2(opponent.getId());
-    match.setUser1Hand(hand);
-    match.setUser2Hand(cpuHand);
+    matchInfoMapper.insertMatchInfo(info);
 
-    matchMapper.insertMatch(match);
-
-    model.addAttribute("cpu", opponent);
     model.addAttribute("loginUser", prin.getName());
-    model.addAttribute("myHand", hand);
-    model.addAttribute("cpuHand", cpuHand);
-
-    // 勝敗判定などを必要に応じて追加
-    return "match";
+    return "wait";
   }
 }
